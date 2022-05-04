@@ -1,0 +1,4 @@
+rinkeby への gatewayアドレス
+    https://eth-rinkeby.alchemyapi.io/v2/1pAX81CLkPRwna562ZUekzTbwUjEL2am
+rinkeby コントラクトアドレス
+    0x515616Ef5D1c18D61a0baA4f709311929e14959B
