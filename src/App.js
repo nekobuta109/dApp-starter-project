@@ -13,9 +13,14 @@ const App = () => {
   const [messageValue, setMessageValue] = useState("");
   /* すべてのwavesを保存する状態変数を定義 */
   const [allWaves, setAllWaves] = useState([]);
+
+  //賞金総額とコントラクトバランスです。
+  const [all_rewards, set_all_rewards] = useState(0);
+  const [contract_balance, set_contract_balance] = useState(0);
+
   console.log("currentAccount: ", currentAccount);
   /* デプロイされたコントラクトのアドレスを保持する変数を作成 */
-  const contractAddress = "0x2F3C07794650FB41144ee616bCFabf1B87C96e5F";
+  const contractAddress = "0x3a5a13683A04E4Fed1D26C6eF8e29740e48c1f5A";
   /* コントラクトからすべてのwavesを取得するメソッドを作成 */
   /* ABIの内容を参照する変数を作成 */
   const contractABI = abi.abi;
@@ -44,6 +49,21 @@ const App = () => {
         });
         /* React Stateにデータを格納する */
         setAllWaves(wavesCleaned);
+
+        //--------------------------------------
+        //  ここで賞金総額を取得します。
+        //---------------------------------------
+       {
+          const r = await wavePortalContract.getTotalRewards();
+         set_all_rewards(ethers.utils.formatEther(r));
+
+        const b = await provider.getBalance(wavePortalContract.address);
+       
+        console.log("balance = %d",b);
+//        set_contract_balance(5);
+          set_contract_balance(ethers.utils.formatEther(b));
+       }
+        //---------------------------------------
       } else {
         console.log("Ethereum object doesn't exist!");
       }
@@ -68,6 +88,7 @@ const App = () => {
           message: message,
         },
       ]);
+      //
     };
     
     /* NewWaveイベントがコントラクトから発信されたときに、情報をを受け取ります */
@@ -161,6 +182,15 @@ const App = () => {
         let contractBalance_post = await provider.getBalance(
           wavePortalContract.address
         );
+        /*toku ここでコントラクトの残高を表示したい。 */
+        set_contract_balance(ethers.utils.formatEther(contractBalance_post));
+        /*toku ここで賞金総額を表示したい */
+        {
+//          const r = await wavePortalContract.getTotalRewards();
+//         set_all_rewards(ethers.utils.formatEther(r));
+          const r = await wavePortalContract.getTotalRewards();
+          set_all_rewards(ethers.utils.formatEther(r));
+        }
         /* コントラクトの残高が減っていることを確認 */
         if (contractBalance_post < contractBalance) {
           /* 減っていたら下記を出力 */
@@ -173,6 +203,9 @@ const App = () => {
           ethers.utils.formatEther(contractBalance_post)
         );
         //---------------------------
+
+
+
       } else {
         console.log("Ethereum object doesn't exist!");
       }
@@ -193,7 +226,7 @@ const App = () => {
           <span role="img" aria-label="hand-wave">
             👋
           </span>{" "}
-          WELCOME TO NEKOBUTA !
+          !!WELCOME!!
         </div>
         <div className="bio">
           イーサリアムウォレットを接続して、メッセージを作成したら、
@@ -205,7 +238,10 @@ const App = () => {
             ✨
           </span>
         </div>
-        <br />
+        {/* 賞金総額を表示する */}
+        {currentAccount && (
+          <div>total rewards: {all_rewards}<br/>contract balance: {contract_balance}</div>
+        )}
         {/* ウォレットコネクトのボタンを実装 */}
         {!currentAccount && (
           <button className="waveButton" onClick={connectWallet}>
